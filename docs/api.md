@@ -66,6 +66,9 @@ It mirrors every module-level function as a method.
 | Bad transport mode | `ValueError` |
 | Network / non-2xx | underlying HTTP error propagates |
 
+For the full list of endpoints, query parameters, and HTML selectors used by
+this client, see [reverse-engineering.md](reverse-engineering.md).
+
 ## Parsing offline
 
 The parsers in `pyerowid.parse` take a raw HTML string and need no network —

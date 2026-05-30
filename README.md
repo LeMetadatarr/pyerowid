@@ -89,5 +89,6 @@ Start with **[docs/quickstart.md](docs/quickstart.md)**, then:
 - [docs/api.md](docs/api.md) — every function and model field
 - [docs/advanced.md](docs/advanced.md) — transport modes, politeness, errors
 - [docs/dataset.md](docs/dataset.md) — the corpus dumper and ML/dataset roadmap
+- [docs/reverse-engineering.md](docs/reverse-engineering.md) — every endpoint used, query parameters, and parsed fields
 
 Runnable, numbered scripts live in [examples/](examples/).
