@@ -59,3 +59,49 @@ def test_block_page_detection():
              '</title></head><body>403 Forbidden</body></html>')
     assert _is_block_page(block) is True
     assert _is_block_page('<html><body><a href="/pharms/x/x.shtml">x</a></body></html>') is False
+
+
+class _FakeResp:
+    def __init__(self, text): self.text = text
+    def raise_for_status(self): pass
+
+
+class _FakeSession:
+    """Returns the block page for the first N calls, then a real page."""
+    def __init__(self, block_times, good="<html>real erowid content</html>"):
+        self.block_times = block_times
+        self.good = good
+        self.calls = 0
+    def get(self, url, **kw):
+        self.calls += 1
+        if self.calls <= self.block_times:
+            return _FakeResp("<html><title>The Vaults of Erowid : 403 - Blocked</title></html>")
+        return _FakeResp(self.good)
+
+
+def test_softblock_backoff_retries_then_recovers(monkeypatch):
+    monkeypatch.setattr(t.time, "sleep", lambda *_: None)  # no real waiting
+    tr = t.Transport(mode="curl_cffi", delay=0.0)
+    tr._block_backoff = 0.01
+    fake = _FakeSession(block_times=2)            # blocked twice, then OK
+    monkeypatch.setattr(tr, "session", lambda: fake)
+    base = tr._min_delay
+    html = tr.get_html("/pharms/")
+    assert "real erowid content" in html          # retry recovered live
+    assert fake.calls == 3                          # 2 blocks + 1 success
+    assert tr._min_delay > base                      # backed off the request rate
+
+
+def test_softblock_persists_falls_back_to_wayback(monkeypatch):
+    monkeypatch.setattr(t.time, "sleep", lambda *_: None)
+    tr = t.Transport(mode="curl_cffi", delay=0.0)
+    tr._block_retries = 2
+    tr._block_backoff = 0.01
+    fake = _FakeSession(block_times=99)            # always blocked
+    monkeypatch.setattr(tr, "session", lambda: fake)
+    import unblock_requests
+    monkeypatch.setattr(unblock_requests, "wayback_html",
+                        lambda url, **kw: "<html>archived erowid snapshot</html>")
+    html = tr.get_html("/pharms/")
+    assert "archived erowid snapshot" in html       # fell back to Wayback
+    assert fake.calls == 3                            # retries+1 live attempts
