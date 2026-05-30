@@ -35,6 +35,12 @@ from urllib.parse import urlencode
 
 from unblock_requests import CloudflareSession
 
+# Defer to shared block detection when available, fall back to erowid markers
+try:
+    from unblock_requests import is_blocked as _shared_is_blocked
+except Exception:
+    _shared_is_blocked = None
+
 BASE = "https://erowid.org"
 
 _ENV_PREFIX = "PYEROWID"
@@ -56,6 +62,8 @@ _BLOCK_MARKERS = ("Vaults of Erowid : 403", "403 - Blocked")
 
 
 def _is_block_page(text: str) -> bool:
+    if _shared_is_blocked is not None and _shared_is_blocked(text):
+        return True
     head = text[:1500]
     return any(marker in head for marker in _BLOCK_MARKERS)
 
