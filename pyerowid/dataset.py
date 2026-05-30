@@ -30,6 +30,7 @@ from pyerowid.reports import (
     _CATEGORY_BASES,
     get_experience,
     parse_substance_page,
+    search_all_reports,
     search_reports,
 )
 from pyerowid.types import Experience, SubstanceInfo, SubstanceListing
@@ -150,11 +151,25 @@ def dump_experiences(out_dir: str, exp_ids: Iterable[int], *,
 
 
 def dump_search(out_dir: str, query: str, *, limit: Optional[int] = None,
-                order: str = "substance", transport: Optional[Transport] = None,
+                order: str = "substance", all_pages: bool = False,
+                max_pages: Optional[int] = None,
+                transport: Optional[Transport] = None,
                 delay: float = 1.0, verbose: bool = True) -> int:
-    """Search reports for *query* and dump (up to *limit*) of them as markdown."""
+    """Search reports for *query* and dump (up to *limit*) of them as markdown.
+
+    Args:
+        all_pages:  When ``True`` auto-paginate through all search result pages
+                    (uses :func:`~pyerowid.reports.search_all_reports`).
+        max_pages:  Cap pagination at this many pages (implies ``all_pages``).
+                    ``None`` = no cap (use with care on large queries).
+        limit:      Hard cap on the number of experience IDs to fetch after
+                    search results are collected.
+    """
     t = transport or default_transport()
-    reports = search_reports(query, order, transport=t)
+    if all_pages or max_pages is not None:
+        reports = search_all_reports(query, order, max_pages=max_pages, transport=t)
+    else:
+        reports = search_reports(query, order, transport=t)
     if limit:
         reports = reports[:limit]
     if verbose:
@@ -207,6 +222,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--search", help="dump reports matching this query")
     parser.add_argument("--limit", type=int, default=10,
                         help="cap on --search reports (default: 10)")
+    parser.add_argument("--all-pages", action="store_true",
+                        help="paginate through all search result pages (use with --max-pages)")
+    parser.add_argument("--max-pages", type=int, default=None,
+                        help="cap pagination at this many pages (implies --all-pages)")
     parser.add_argument("--substances", choices=sorted(_CATEGORY_BASES),
                         help="dump a substance vault category index")
     parser.add_argument("--max-substances", type=int, default=5,
@@ -231,6 +250,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                                   transport=transport, delay=args.delay, verbose=verbose)
     if args.search:
         total += dump_search(args.out, args.search, limit=args.limit,
+                             all_pages=args.all_pages, max_pages=args.max_pages,
                              transport=transport, delay=args.delay, verbose=verbose)
     if args.substances:
         listings = _category_listings(args.substances, transport=transport)[:args.max_substances]

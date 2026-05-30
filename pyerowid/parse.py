@@ -134,14 +134,23 @@ def parse_substance_list(html: str, base_url: str) -> List[SubstanceListing]:
 
 
 def parse_search(html: str) -> List[Report]:
-    """Parse a search-results page (``exp.cgi``) into :class:`Report` stubs."""
+    """Parse a search-results page (``exp.cgi``) into :class:`Report` stubs.
+
+    Handles both classed (``tr.exp-list-row``) and unclassed ``<tr>`` rows —
+    the live site emits rows with no class; the selector falls back to any row
+    inside ``table.exp-list-table`` that carries an ``ID=`` link.
+    """
     base_url = "https://erowid.org/experiences/"
     soup = BeautifulSoup(html, "html.parser")
     table = soup.find("table", {"class": "exp-list-table"})
     if not table:
         return []
     reports: List[Report] = []
-    for r in table.find_all("tr", {"class": "exp-list-row"}):
+    # Prefer explicit class; fall back to any row with an ID link.
+    candidate_rows = table.find_all("tr", {"class": "exp-list-row"})
+    if not candidate_rows:
+        candidate_rows = [r for r in table.find_all("tr") if r.find("a", href=_ID_RE)]
+    for r in candidate_rows:
         link = r.find("a", href=_ID_RE)
         if not link:
             continue
@@ -161,6 +170,21 @@ def parse_search(html: str) -> List[Report]:
             date=date,
         ))
     return reports
+
+
+def parse_search_page_count(html: str) -> int:
+    """Return the total number of paginated pages from a search results page.
+
+    Reads the ``table.results-table`` banner (e.g. *"Page 1 of 3 / 232 reports
+    returned"*) and returns the page count; returns ``1`` when the banner is
+    absent (single-page result or unknown).
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    tbl = soup.find("table", {"class": "results-table"})
+    if not tbl:
+        return 1
+    m = re.search(r"page\s+\d+\s+of\s+(\d+)", tbl.get_text(), re.I)
+    return int(m.group(1)) if m else 1
 
 
 def parse_page(html: str, url: str) -> SubstanceInfo:

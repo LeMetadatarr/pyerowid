@@ -82,9 +82,26 @@ The `pyerowid.search_reports` function accepts a friendlier `order` alias
 (`"substance"`, `"recent"`, `"old"`, `"rating"`) and maps it to these values;
 a raw `OldSort` value can also be passed directly.
 
-**Pagination:** The search endpoint returns a single HTML page of results; no
-pagination parameters were observed. The maximum result count is whatever the
-server applies server-side.
+**Pagination:** The server supports offset-based pagination via two additional
+query parameters:
+
+| Query param | Type | Meaning |
+|---|---|---|
+| `Start` | integer | 0-based offset into the result set |
+| `Max` | integer | results per page (100 is the largest value observed) |
+
+When `Start`/`Max` are omitted the server returns its own default page. A
+`table.results-table` in the response carries a banner like *"Page 1 of 3 /
+232 reports returned"* — the page count is parsed by
+`parse_search_page_count`. Additional parameters observed in pagination links:
+
+| Parameter | Observed value | Effect |
+|---|---|---|
+| `ShowViews` | ``0`` | hides view counts (link-generated; safe to omit) |
+| `Cellar` | ``0`` | unknown filter; safe to omit |
+
+`search_all_reports` auto-iterates all pages. `search_reports` exposes `start`
+and `page_size` for manual paging.
 
 **Parsed fields** (from `parse_search`, one `Report` per row):
 
@@ -97,7 +114,10 @@ server applies server-side.
 | `substance` | Last-four cells — cell 2 |
 | `date` | Last-four cells — cell 3 |
 
-The result set lives in `table.exp-list-table`; rows are `tr.exp-list-row`.
+The result set lives in `table.exp-list-table`. Rows are `tr.exp-list-row` in
+the crafted test fixture; on the **live site and Wayback snapshots the rows
+carry no CSS class** — the parser detects both cases (explicit class first,
+then any `<tr>` with an `ID=` link as fallback).
 
 **Example URL:**
 ```

@@ -15,6 +15,7 @@ from pyerowid.parse import (
     parse_experience,
     parse_page,
     parse_search,
+    parse_search_page_count,
     parse_substance_list,
 )
 from pyerowid.types import Experience, Report, SubstanceInfo, SubstanceListing
@@ -120,14 +121,32 @@ def random_experience(*, transport: Optional[Transport] = None,
     return None
 
 
+_SORT_MAP = {
+    "substance": "SA",
+    "date": "PDD", "recent": "PDD",
+    "old": "PDA", "older": "PDA", "oldest": "PDA",
+    "rating": "RA",
+}
+
+_DEFAULT_PAGE_SIZE = 100  # server default / max observed
+
+
 def search_reports(search_term: str, order: str = "substance", *,
+                   start: int = 0,
+                   page_size: int = _DEFAULT_PAGE_SIZE,
                    transport: Optional[Transport] = None) -> List[Report]:
-    """Search experience reports for *search_term*.
+    """Search experience reports for *search_term* (one page).
 
     Args:
-        order: ``"substance"`` (default), ``"date"``/``"recent"``,
-               ``"old"``/``"older"``/``"oldest"``, ``"rating"``, or a raw
-               ``OldSort`` value.
+        order:     ``"substance"`` (default), ``"date"``/``"recent"``,
+                   ``"old"``/``"older"``/``"oldest"``, ``"rating"``, or a raw
+                   ``OldSort`` value.
+        start:     0-based offset into the result set (pagination via the
+                   server's ``Start`` parameter).
+        page_size: number of results per page (server ``Max`` parameter,
+                   default 100).
+
+    Use :func:`search_all_reports` to auto-paginate the full result set.
 
     Example::
 
@@ -135,19 +154,63 @@ def search_reports(search_term: str, order: str = "substance", *,
         for r in pyerowid.search_reports("LSD")[:5]:
             print(r.exp_id, r.name, r.substance)
     """
-    params = {"Str": search_term}
-    sort_map = {
-        "substance": "SA",
-        "date": "PDD", "recent": "PDD",
-        "old": "PDA", "older": "PDA", "oldest": "PDA",
-        "rating": "RA",
-    }
-    if order in sort_map:
-        params["OldSort"] = sort_map[order]
+    params: dict = {"Str": search_term}
+    if order in _SORT_MAP:
+        params["OldSort"] = _SORT_MAP[order]
     elif order is not None:
         params["OldSort"] = order
+    if start:
+        params["Start"] = start
+        params["Max"] = page_size
     html = _t(transport).get_html("/experiences/exp.cgi", **params)
     return parse_search(html)
+
+
+def search_all_reports(search_term: str, order: str = "substance", *,
+                       page_size: int = _DEFAULT_PAGE_SIZE,
+                       max_pages: Optional[int] = None,
+                       transport: Optional[Transport] = None) -> List[Report]:
+    """Search experience reports for *search_term*, auto-paginating all pages.
+
+    Fetches the first page, reads the total page count from the ``results-table``
+    banner, then fetches subsequent pages until exhausted or *max_pages* is
+    reached.
+
+    Args:
+        order:      Sort order (same values as :func:`search_reports`).
+        page_size:  Results per page (server ``Max``); default 100.
+        max_pages:  Stop after this many pages (``None`` = no cap).
+
+    Example::
+
+        import pyerowid
+        # All LSD reports — may be thousands; use max_pages for sampling
+        all_reports = pyerowid.search_all_reports("LSD", max_pages=3)
+    """
+    t = _t(transport)
+    params: dict = {"Str": search_term}
+    if order in _SORT_MAP:
+        params["OldSort"] = _SORT_MAP[order]
+    elif order is not None:
+        params["OldSort"] = order
+
+    # First page (no Start/Max → server uses its own default)
+    html = t.get_html("/experiences/exp.cgi", **params)
+    results = parse_search(html)
+    total_pages = parse_search_page_count(html)
+
+    if max_pages is not None:
+        total_pages = min(total_pages, max_pages)
+
+    # Subsequent pages
+    for page_num in range(1, total_pages):
+        page_params = dict(params)
+        page_params["Start"] = page_num * page_size
+        page_params["Max"] = page_size
+        html = t.get_html("/experiences/exp.cgi", **page_params)
+        results.extend(parse_search(html))
+
+    return results
 
 
 class Erowid:
@@ -221,3 +284,8 @@ class Erowid:
 
     def search_reports(self, search_term: str, order: str = "substance") -> List[Report]:
         return search_reports(search_term, order, transport=self.transport)
+
+    def search_all_reports(self, search_term: str, order: str = "substance",
+                           max_pages: Optional[int] = None) -> List[Report]:
+        return search_all_reports(search_term, order,
+                                  max_pages=max_pages, transport=self.transport)

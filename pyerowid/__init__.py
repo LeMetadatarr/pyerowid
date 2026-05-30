@@ -50,6 +50,7 @@ from pyerowid.reports import (
     get_smarts,
     parse_substance_page,
     random_experience,
+    search_all_reports,
     search_reports,
 )
 from pyerowid._transport import Transport
@@ -73,6 +74,7 @@ __all__ = [
     "get_smarts",
     "parse_substance_page",
     "random_experience",
+    "search_all_reports",
     "search_reports",
     "__version__",
 ]
