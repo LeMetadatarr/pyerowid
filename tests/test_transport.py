@@ -51,3 +51,11 @@ def test_client_kwargs(monkeypatch):
     c = pyerowid.Erowid(flaresolverr_url="http://localhost:8191")
     assert c.transport._resolved_mode() == "flaresolverr"
     assert c.transport._fs_url() == "http://localhost:8191"
+
+
+def test_block_page_detection():
+    from pyerowid._transport import _is_block_page
+    block = ('<html><head><title>The Vaults of Erowid : 403 - Blocked'
+             '</title></head><body>403 Forbidden</body></html>')
+    assert _is_block_page(block) is True
+    assert _is_block_page('<html><body><a href="/pharms/x/x.shtml">x</a></body></html>') is False

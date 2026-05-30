@@ -37,6 +37,17 @@ BASE = "https://erowid.org"
 _ENV_PREFIX = "PYEROWID"
 _VALID_MODES = {"requests", "curl_cffi", "wayback", "flaresolverr"}
 
+# Erowid serves an IP block as an HTTP 200 body titled "403 - Blocked" rather
+# than a real error status or a Cloudflare challenge, so neither raise_for_status
+# nor the session's challenge heuristic catches it. Detect it by content and
+# recover from the Internet Archive.
+_BLOCK_MARKERS = ("Vaults of Erowid : 403", "403 - Blocked")
+
+
+def _is_block_page(text: str) -> bool:
+    head = text[:1500]
+    return any(marker in head for marker in _BLOCK_MARKERS)
+
 
 def _truthy(value: Optional[str]) -> bool:
     return (value or "").strip().lower() in {"1", "true", "yes", "on"}
@@ -113,13 +124,24 @@ class Transport:
     # -- fetch -------------------------------------------------------------
 
     def get_html(self, path: str, **params: Any) -> str:
-        """GET ``{BASE}{path}`` (with query *params*) and return the HTML."""
+        """GET ``{BASE}{path}`` (with query *params*) and return the HTML.
+
+        When the live site answers with its IP-block page, transparently
+        recover the latest Internet Archive snapshot so the catalog stays
+        readable from blocked exit IPs.
+        """
         url = path if path.startswith("http") else f"{BASE}{path}"
         if params:
             url = f"{url}?{urlencode(params)}"
         r = self.session().get(url, timeout=30)
         r.raise_for_status()
-        return r.text
+        text = r.text
+        if self._resolved_mode() != "wayback" and _is_block_page(text):
+            from unblock_requests import wayback_html
+            snapshot = wayback_html(url)
+            if snapshot and not _is_block_page(snapshot):
+                return snapshot
+        return text
 
 
 _DEFAULT_TRANSPORT: Optional[Transport] = None
