@@ -13,7 +13,7 @@ import pyerowid
 
 def main() -> None:
     # 1. Solve any challenge live via a FlareSolverr instance.
-    live = pyerowid.Erowid(flaresolverr_url="http://192.168.1.116:8191")
+    live = pyerowid.Erowid(flaresolverr_url="http://localhost:8191")
     print("transport:", live.transport._resolved_mode())
 
     # 2. Force the Internet Archive explicitly — no live request.

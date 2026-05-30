@@ -32,7 +32,7 @@ Every knob is also a constructor kwarg on the `Erowid` client (and on
 import pyerowid
 
 # FlareSolverr (live) — setting the URL selects the flaresolverr transport
-client = pyerowid.Erowid(flaresolverr_url="http://192.168.1.116:8191")
+client = pyerowid.Erowid(flaresolverr_url="http://localhost:8191")
 
 # Force the Internet Archive
 archived = pyerowid.Erowid(wayback=True)            # == transport="wayback"
@@ -42,7 +42,7 @@ resilient = pyerowid.Erowid(wayback_fallback=True)
 
 # Or build a Transport yourself and pass it to the functions
 from pyerowid import Transport
-t = Transport(mode="flaresolverr", flaresolverr_url="http://192.168.1.116:8191",
+t = Transport(mode="flaresolverr", flaresolverr_url="http://localhost:8191",
               flaresolverr_timeout_ms=90000)
 pyerowid.get_experience(1, transport=t)
 ```

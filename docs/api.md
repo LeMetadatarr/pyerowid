@@ -28,7 +28,7 @@ Binds a configurable transport so no environment variables are needed:
 
 ```python
 import pyerowid
-client = pyerowid.Erowid(flaresolverr_url="http://192.168.1.116:8191")
+client = pyerowid.Erowid(flaresolverr_url="http://localhost:8191")
 exp = client.get_experience(1)
 client.search_reports("LSD")
 client.get_pharms()

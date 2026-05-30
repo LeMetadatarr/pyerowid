@@ -160,7 +160,7 @@ class Erowid:
         transport:            ``"requests"`` / ``"curl_cffi"`` / ``"wayback"`` /
                               ``"flaresolverr"``, or a ready :class:`Transport`.
         flaresolverr_url:     FlareSolverr base URL (e.g.
-                              ``"http://192.168.1.116:8191"``); setting it
+                              ``"http://localhost:8191"``); setting it
                               selects the ``flaresolverr`` transport.
         flaresolverr_timeout_ms: per-request solve budget.
         wayback:              force the Internet Archive (same as
@@ -170,7 +170,7 @@ class Erowid:
     Example::
 
         import pyerowid
-        client = pyerowid.Erowid(flaresolverr_url="http://192.168.1.116:8191")
+        client = pyerowid.Erowid(flaresolverr_url="http://localhost:8191")
         exp = client.get_experience(1)
     """
 

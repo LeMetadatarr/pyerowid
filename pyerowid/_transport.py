@@ -52,7 +52,7 @@ class Transport:
                               environment, then auto (FlareSolverr if a URL is
                               configured, else curl_cffi).
         flaresolverr_url:     FlareSolverr base URL, e.g.
-                              ``"http://192.168.1.116:8191"``. Setting this
+                              ``"http://localhost:8191"``. Setting this
                               alone selects the ``flaresolverr`` mode.
         flaresolverr_timeout_ms: per-request solve budget (default 60000).
         wayback_fallback:     fall back to the Wayback Machine on any live
@@ -61,7 +61,7 @@ class Transport:
     Example::
 
         from pyerowid import Transport
-        t = Transport(flaresolverr_url="http://192.168.1.116:8191")
+        t = Transport(flaresolverr_url="http://localhost:8191")
         t = Transport(mode="wayback")          # force the Internet Archive
     """
 
