@@ -1,7 +1,7 @@
 # API reference
 
 Every fetch function takes an optional `transport` keyword
-([advanced.md](advanced.md)); the high-level `Erowid` client binds one for you.
+([advanced.md](advanced.md)). The high-level `Erowid` client binds one for you.
 
 ## Functions
 
@@ -40,14 +40,15 @@ It mirrors every module-level function as a method.
 
 ### `Experience`
 `exp_id`, `url`, `name`, `author`, `substance`, `text`, `year`, `gender`,
-`age`, `date`, `dosage: List[DosageEntry]`. `site_id` → `str(exp_id)`;
-`to_dict()`.
+`age`, `date`, `dosage: List[DosageEntry]`. `site_id` returns `str(exp_id)`.
+Has `to_dict()`.
 
 ### `DosageEntry`
 `time`, `amount`, `method`, `substance`, `form`.
 
 ### `Report` (search/listing stub)
-`exp_id`, `url`, `name`, `author`, `substance`, `date`. `site_id`; `to_dict()`.
+`exp_id`, `url`, `name`, `author`, `substance`, `date`. Has `site_id` and
+`to_dict()`.
 
 ### `SubstanceListing` (vault index row)
 `name`, `url`, `other_names`, `effects`.
@@ -71,10 +72,13 @@ this client, see [reverse-engineering.md](reverse-engineering.md).
 
 ## Parsing offline
 
-The parsers in `pyerowid.parse` take a raw HTML string and need no network —
-handy for testing or feeding pre-fetched HTML:
+The parsers in `pyerowid.parse` take a raw HTML string and need no network.
+Use them for testing or for feeding pre-fetched HTML:
 
 ```python
 from pyerowid.parse import parse_experience, parse_search, parse_page
 exp = parse_experience(open("exp.html").read(), 1)
 ```
+
+---
+[← Quickstart](quickstart.md) · [Home](../README.md) · [Advanced →](advanced.md)
