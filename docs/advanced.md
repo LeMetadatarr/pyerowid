@@ -3,7 +3,7 @@
 ## Transport
 
 Every fetch routes through the org HTTP transport
-[`unblock_requests`](../../../utils/unblock_requests) — its `CloudflareSession`
+[`unblock_requests`](../../../utils/unblock_requests). Its `CloudflareSession`
 is a drop-in `requests.Session` subclass that picks how a page is fetched and
 can fall back to the Internet Archive. `pyerowid._transport.Transport` wraps it
 with the `PYEROWID_*` env namespace and `BASE = https://erowid.org`.
@@ -12,11 +12,11 @@ with the `PYEROWID_*` env namespace and `BASE = https://erowid.org`.
 
 `PYEROWID_TRANSPORT` selects how pages are fetched:
 
-| Value | Behaviour |
+| Value | Behavior |
 |---|---|
-| *(unset)* / `curl_cffi` | Live fetch with Chrome TLS impersonation (default; needs the `stealth` extra). |
+| *(unset)* / `curl_cffi` | Live fetch with Chrome TLS impersonation. This is the default and needs the `stealth` extra. |
 | `requests` | Live fetch with plain `requests`. |
-| `wayback` | **Do not touch the live site** — fetch the latest snapshot from the Internet Archive. |
+| `wayback` | **Do not touch the live site.** Fetch the latest snapshot from the Internet Archive. |
 | `flaresolverr` | Fetch through a FlareSolverr proxy (a headless browser) and return **live** HTML. |
 
 ```bash
@@ -26,12 +26,12 @@ export PYEROWID_TRANSPORT=requests   # or: curl_cffi (default), wayback, flareso
 ### Configure in code (no env vars)
 
 Every knob is also a constructor kwarg on the `Erowid` client (and on
-`Transport`); explicit kwargs always win over the environment:
+`Transport`). Explicit kwargs always win over the environment:
 
 ```python
 import pyerowid
 
-# FlareSolverr (live) — setting the URL selects the flaresolverr transport
+# FlareSolverr (live): setting the URL selects the flaresolverr transport
 client = pyerowid.Erowid(flaresolverr_url="http://localhost:8191")
 
 # Force the Internet Archive
@@ -53,7 +53,7 @@ Env fallbacks (prefix `PYEROWID`): `PYEROWID_TRANSPORT`,
 
 ## Politeness
 
-Erowid is a small, donation-funded harm-reduction nonprofit — be a good guest.
+Erowid is a small, donation-funded harm-reduction nonprofit. Be a good guest.
 Reuse one session (the default transport, or one `Erowid` client) and throttle:
 
 ```python
@@ -82,3 +82,6 @@ pharms  = parse_substance_list(open("pharms.html").read(), "https://erowid.org/p
 info    = parse_page(open("acetaminophen.html").read(),
                      "https://erowid.org/pharms/acetaminophen/acetaminophen.shtml")
 ```
+
+---
+[← API reference](api.md) · [Home](../README.md) · [Dataset →](dataset.md)
