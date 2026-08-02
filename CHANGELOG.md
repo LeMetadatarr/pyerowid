@@ -1,12 +1,20 @@
 # Changelog
 
-## [0.0.1a2](https://github.com/TigreGotico/pyerowid/tree/0.0.1a2) (2026-07-30)
+## [0.0.1a3](https://github.com/LeMetadatarr/pyerowid/tree/0.0.1a3) (2026-08-02)
 
-[Full Changelog](https://github.com/TigreGotico/pyerowid/compare/dba52c7f16412d720c5d435d14b8c000d0083e59...0.0.1a2)
+[Full Changelog](https://github.com/LeMetadatarr/pyerowid/compare/0.0.1a2...0.0.1a3)
 
 **Merged pull requests:**
 
-- docs: rewrite README in Simplified Technical English [\#3](https://github.com/TigreGotico/pyerowid/pull/3) ([JarbasAl](https://github.com/JarbasAl))
+- docs: QA pass — accuracy, org-move URLs, related projects [\#5](https://github.com/LeMetadatarr/pyerowid/pull/5) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.0.1a2](https://github.com/LeMetadatarr/pyerowid/tree/0.0.1a2) (2026-07-30)
+
+[Full Changelog](https://github.com/LeMetadatarr/pyerowid/compare/dba52c7f16412d720c5d435d14b8c000d0083e59...0.0.1a2)
+
+**Merged pull requests:**
+
+- docs: rewrite README in Simplified Technical English [\#3](https://github.com/LeMetadatarr/pyerowid/pull/3) ([JarbasAl](https://github.com/JarbasAl))
 
 
 
