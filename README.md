@@ -23,7 +23,7 @@ pip install pyerowid[test]      # adds pytest
 ```
 
 All HTTP traffic routes through the org transport
-[`unblock_requests`](../../utils/unblock_requests), a drop-in
+[`unblock_requests`](https://github.com/LeMetadatarr/unblock_requests), a drop-in
 `requests.Session` subclass. Pick the fetch mode with `PYEROWID_TRANSPORT`
 (`curl_cffi` default, `requests`, `wayback`, `flaresolverr`). See
 [docs/advanced.md](docs/advanced.md) for details.
@@ -93,3 +93,12 @@ Start with **[docs/quickstart.md](docs/quickstart.md)**, then:
 - [docs/reverse-engineering.md](docs/reverse-engineering.md): every endpoint used, query parameters, and parsed fields
 
 Runnable, numbered scripts live in [examples/](examples/).
+
+## Related projects
+
+- [unblock_requests](https://github.com/LeMetadatarr/unblock_requests): the
+  `requests.Session` subclass this client's transport is built on.
+- [pypsychonaut](https://github.com/LeMetadatarr/pypsychonaut): the same
+  typed-client-plus-corpus-dumper pattern for PsychonautWiki.
+- [pytripsit](https://github.com/LeMetadatarr/pytripsit): TripSit drug
+  factsheets and interaction matrix client, another harm-reduction source.

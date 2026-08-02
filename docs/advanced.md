@@ -3,7 +3,7 @@
 ## Transport
 
 Every fetch routes through the org HTTP transport
-[`unblock_requests`](../../../utils/unblock_requests). Its `CloudflareSession`
+[`unblock_requests`](https://github.com/LeMetadatarr/unblock_requests). Its `CloudflareSession`
 is a drop-in `requests.Session` subclass that picks how a page is fetched and
 can fall back to the Internet Archive. `pyerowid._transport.Transport` wraps it
 with the `PYEROWID_*` env namespace and `BASE = https://erowid.org`.

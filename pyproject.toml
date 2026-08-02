@@ -29,8 +29,8 @@ test = ["pytest"]
 pyerowid-dump = "pyerowid.dataset:main"
 
 [project.urls]
-Homepage = "https://github.com/TigreGotico/pyerowid"
-Repository = "https://github.com/TigreGotico/pyerowid"
+Homepage = "https://github.com/LeMetadatarr/pyerowid"
+Repository = "https://github.com/LeMetadatarr/pyerowid"
 
 [tool.setuptools.packages.find]
 where = ["."]
