@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.0a1](https://github.com/LeMetadatarr/pyerowid/tree/0.1.0a1) (2026-08-14)
+
+[Full Changelog](https://github.com/LeMetadatarr/pyerowid/compare/0.0.1a4...0.1.0a1)
+
+**Merged pull requests:**
+
+- feat: JSONL dataset builders for experiences + substances [\#7](https://github.com/LeMetadatarr/pyerowid/pull/7) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.0.1a4](https://github.com/LeMetadatarr/pyerowid/tree/0.0.1a4) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/pyerowid/compare/0.0.1a3...0.0.1a4)
